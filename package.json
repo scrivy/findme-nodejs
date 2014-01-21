@@ -1,0 +1,25 @@
+{
+  "name": "findme",
+  "version": "0.0.0",
+  "description": "findme ======",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/scrivy/findme.git"
+  },
+  "author": "scrivy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/scrivy/findme/issues"
+  },
+  "homepage": "https://github.com/scrivy/findme",
+  "dependencies": {
+    "redis": "~0.10.0",
+    "hiredis": "~0.1.16",
+    "jade": "~1.1.5",
+    "express": "~3.4.8"
+  }
+}
