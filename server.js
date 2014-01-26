@@ -33,14 +33,11 @@ var port = process.env.findmeport || 5000
 console.log('Listening on port ' + port);
 
 io.sockets.on('connection', function(socket) {
-  socket.on('send', function(data) {
-    io.sockets.emit('locations', data);
-  });
-
   socket.on('disconnect', function() {
     console.log(updatepeople(-1) + ' people connected');
 
     delete locations[this.id];
+    io.sockets.emit('everyones locations', locations);
   });
 
   socket.on('location update', function(position) {

@@ -36,7 +36,11 @@ socket.on('everyones locations', function(locations) {
     }
   }
 
-  console.log(locations);
+  var j;
+  for (j=i; j<everyone.length; j++) {
+    map.removeLayer(everyone[i]);
+    everyone.splice(i,1);
+  }
 });
 
 if (navigator.geolocation) {
