@@ -18,7 +18,7 @@ var mymarker = L.marker([0, 0], {
   alt: "Me!"
 }).addTo(map);
 
-var everyone = [];
+var everyone = {};
 
 var socket = io.connect('');
 
@@ -29,18 +29,33 @@ socket.on('everyones locations', function(locations) {
     , ids = Object.keys(locations);
 
   for (i=0; i<ids.length; i++) {
-    if (!everyone[i]) {
-      everyone[i] = L.marker(locations[ids[i]]).addTo(map);
+    if (!everyone.hasOwnProperty(ids[i])) {
+      everyone[ids[i]] = L.marker(locations[ids[i]]).addTo(map);
     } else {
-      everyone[i].setLatLng(locations[ids[i]]);
+      everyone[ids[i]].setLatLng(locations[ids[i]]);
     }
   }
 
-  var j;
+/*  var j;
   for (j=i; j<everyone.length; j++) {
     map.removeLayer(everyone[i]);
     everyone.splice(i,1);
+  } */
+});
+
+socket.on('location update', function(location) {
+  if (location.id != this.socket.sessionid) {
+    if (everyone[location.id]) {
+      everyone[location.id].setLatLng(location.position);
+    } else {
+      everyone[location.id] = L.marker(location.position).addTo(map);
+    }
   }
+});
+
+socket.on('delete location', function(locationid) {
+  map.removeLayer(everyone[locationid]);
+  delete everyone[locationid];
 });
 
 if (navigator.geolocation) {
@@ -54,7 +69,7 @@ if (navigator.geolocation) {
     var latlng = [position.coords.latitude, position.coords.longitude];
 
     mymarker.setLatLng(latlng);
-    socket.emit('location update', { latlng: latlng });
+    socket.emit('update my location', { latlng: latlng });
   }
 
   function geo_error() {
