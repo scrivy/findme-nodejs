@@ -13,7 +13,9 @@ map.locate({setView: true, maxZoom: 18});
 
 var mymarker = L.marker([0, 0], {
   icon: L.icon({
-    iconUrl: 'js/lib/images/mymarker.png'
+    iconUrl: 'js/lib/images/mymarker.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 40]
   }),
   alt: "Me!"
 }).addTo(map);
