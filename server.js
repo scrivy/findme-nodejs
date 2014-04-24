@@ -1,12 +1,6 @@
-var express = require('express')
-  , redismod = require('redis');
+var express = require('express');
 
 var app = express();
-/*  , redis = redismod.createClient();
-
-redis.on('error', function(err) {
-  console.log('redis error - ' + err);
-}); */
 
 // express setup
 app.set('views', __dirname + '/views');
