@@ -1,6 +1,18 @@
-var express = require('express');
+'use strict';
 
-var app = express();
+var express = require('express')
+  , Primus = require('primus')
+  , http = require('http');
+
+var port = process.env.findmeport || 5000
+  , app = express()
+  , server = http.createServer(app);
+
+server.listen(port);
+
+var primus = new Primus(server, { transformer: 'engine.io' });
+
+/* left off here -------------------------- */
 
 // express setup
 app.set('views', __dirname + '/views');
