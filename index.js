@@ -2,7 +2,8 @@
 
 var express = require('express')
   , Primus = require('primus')
-  , http = require('http');
+  , http = require('http')
+  , findme = require('./lib/findme');
 
 var port = process.env.findmeport || 5000
   , app = express()
@@ -11,16 +12,13 @@ var port = process.env.findmeport || 5000
 server.listen(port);
 
 var primus = new Primus(server, { transformer: 'engine.io' });
-
-/* left off here -------------------------- */
+findme.init(primus);
 
 // express setup
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.favicon());
 app.use(express.logger('dev'));
-app.use(express.bodyParser());
-app.use(express.methodOverride());
 
 // get/post requests
 app.get('/', function(req, res) {
@@ -30,14 +28,41 @@ app.get('/', function(req, res) {
 // serve static files
 app.use(express.static(__dirname + '/public'));
 
-// everyones locations
-var locations = {};
+primus.on('connection', function(spark) {
+  console.log('socket opened');
 
-// listen!
-var port = process.env.findmeport || 5000
-  , io = require('socket.io').listen(app.listen(port));
-console.log('Listening on port ' + port);
+  findme.sendalllocations();
 
+  spark.on('data', function(message) {
+    console.log('socket message - ' + message.action);
+
+    if (!message.action || !message.data) {
+      console.log('malformed socket message, disregarding');
+      return;
+    }
+
+    switch(message.action) {
+      case 'updatelocation':
+        findme.updatelocation(message.data);
+        break;
+
+      default:
+        console.log('socket message received, did not match an action');
+        break;
+    }
+    
+  });
+});
+
+primus.on('disconnection', function(spark) {
+  console.log('socket closed');
+  findme.deletelocation(spark);
+});
+
+
+
+
+/*
 io.sockets.on('connection', function(socket) {
   io.sockets.emit('everyones locations', locations);
   socket.on('disconnect', function() {
@@ -60,15 +85,5 @@ io.sockets.on('connection', function(socket) {
     io.sockets.emit('location update', location);
   });
 
-  var updatepeople = function(offset) {
-    if (!offset)
-      offset = 0;
-
-    var people = {};
-    people.count = Object.keys(io.connected).length + offset;
-    io.sockets.emit('people', people);
-    return people.count;
-  };
-
-  console.log(updatepeople() + ' people connected');
 });
+*/

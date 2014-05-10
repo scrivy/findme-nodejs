@@ -22,27 +22,44 @@ var mymarker = L.marker([0, 0], {
 
 var everyone = {};
 
-var socket = io.connect('');
+var primus = new Primus();
 
+primus.on('data', function(message) {
+  console.log(message);
+
+  switch(message.action) {
+    case 'alllocations':
+      var locations = message.data;
+      delete locations[this.socket.id];
+
+      var i
+        , ids = Object.keys(locations);
+
+      for (i=0; i<ids.length; i++) {
+        if (!everyone.hasOwnProperty(ids[i])) {
+          everyone[ids[i]] = L.marker(locations[ids[i]]).addTo(map);
+        } else {
+          everyone[ids[i]].setLatLng(locations[ids[i]]);
+        }
+      }
+
+      var j;
+      for (j=i; j<everyone.length; j++) {
+        map.removeLayer(everyone[i]);
+        everyone.splice(i,1);
+      } 
+
+      break;
+
+  }
+
+
+});
+
+/*
 socket.on('everyones locations', function(locations) {
   delete locations[this.socket.sessionid];
 
-  var i
-    , ids = Object.keys(locations);
-
-  for (i=0; i<ids.length; i++) {
-    if (!everyone.hasOwnProperty(ids[i])) {
-      everyone[ids[i]] = L.marker(locations[ids[i]]).addTo(map);
-    } else {
-      everyone[ids[i]].setLatLng(locations[ids[i]]);
-    }
-  }
-
-/*  var j;
-  for (j=i; j<everyone.length; j++) {
-    map.removeLayer(everyone[i]);
-    everyone.splice(i,1);
-  } */
 });
 
 socket.on('location update', function(location) {
@@ -59,6 +76,7 @@ socket.on('delete location', function(locationid) {
   map.removeLayer(everyone[locationid]);
   delete everyone[locationid];
 });
+*/
 
 if (navigator.geolocation) {
   var geo_options = {
@@ -71,7 +89,7 @@ if (navigator.geolocation) {
     var latlng = [position.coords.latitude, position.coords.longitude];
 
     mymarker.setLatLng(latlng);
-    socket.emit('update my location', { latlng: latlng });
+//    socket.emit('update my location', { latlng: latlng });
   }
 
   function geo_error() {
