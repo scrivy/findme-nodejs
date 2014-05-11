@@ -43,7 +43,7 @@ primus.on('connection', function(spark) {
 
     switch(message.action) {
       case 'updatelocation':
-        findme.updatelocation(message.data);
+        findme.updatelocation(this.id, message.data);
         break;
 
       default:
@@ -56,7 +56,7 @@ primus.on('connection', function(spark) {
 
 primus.on('disconnection', function(spark) {
   console.log('socket closed');
-  findme.deletelocation(spark);
+  findme.deletelocation(spark.id);
 });
 
 

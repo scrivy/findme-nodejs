@@ -32,10 +32,9 @@ primus.on('data', function(message) {
       var locations = message.data;
       delete locations[this.socket.id];
 
-      var i
-        , ids = Object.keys(locations);
+      var ids = Object.keys(locations);
 
-      for (i=0; i<ids.length; i++) {
+      for (var i=0; i<ids.length; i++) {
         if (!everyone.hasOwnProperty(ids[i])) {
           everyone[ids[i]] = L.marker(locations[ids[i]]).addTo(map);
         } else {
@@ -43,8 +42,7 @@ primus.on('data', function(message) {
         }
       }
 
-      var j;
-      for (j=i; j<everyone.length; j++) {
+      for (var j=i; j<everyone.length; j++) {
         map.removeLayer(everyone[i]);
         everyone.splice(i,1);
       } 
@@ -89,7 +87,7 @@ if (navigator.geolocation) {
     var latlng = [position.coords.latitude, position.coords.longitude];
 
     mymarker.setLatLng(latlng);
-//    socket.emit('update my location', { latlng: latlng });
+    primus.write({ action: 'updatelocation', data: latlng });
   }
 
   function geo_error() {
