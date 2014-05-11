@@ -29,7 +29,7 @@ primus.on('data', function(message) {
 
   switch(message.action) {
     case 'alllocations':
-      var locations = message.data;
+      var locations = message.data.locations;
       delete locations[this.socket.id];
 
       var ids = Object.keys(locations);
@@ -48,33 +48,26 @@ primus.on('data', function(message) {
       } 
 
       break;
+    case 'updatelocation':
+      var location = message.data;
+      if (location.id !== this.socket.id) {
+        if (everyone[location.id]) {
+          everyone[location.id].setLatLng(location.latlng);
+        } else {
+          everyone[location.id] = L.marker(location.latlng).addTo(map);
+        }
+      }
 
+      break;
+    case 'deletelocation':
+      var locationid = message.data.id;
+      map.removeLayer(everyone[locationid]);
+      delete everyone[locationid];
+      break;
   }
 
 
 });
-
-/*
-socket.on('everyones locations', function(locations) {
-  delete locations[this.socket.sessionid];
-
-});
-
-socket.on('location update', function(location) {
-  if (location.id != this.socket.sessionid) {
-    if (everyone[location.id]) {
-      everyone[location.id].setLatLng(location.position);
-    } else {
-      everyone[location.id] = L.marker(location.position).addTo(map);
-    }
-  }
-});
-
-socket.on('delete location', function(locationid) {
-  map.removeLayer(everyone[locationid]);
-  delete everyone[locationid];
-});
-*/
 
 if (navigator.geolocation) {
   var geo_options = {

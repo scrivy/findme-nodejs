@@ -31,7 +31,7 @@ app.use(express.static(__dirname + '/public'));
 primus.on('connection', function(spark) {
   console.log('socket opened');
 
-  findme.sendalllocations();
+  findme.sendalllocations(spark.id);
 
   spark.on('data', function(message) {
     console.log('socket message - ' + message.action);
@@ -59,31 +59,3 @@ primus.on('disconnection', function(spark) {
   findme.deletelocation(spark.id);
 });
 
-
-
-
-/*
-io.sockets.on('connection', function(socket) {
-  io.sockets.emit('everyones locations', locations);
-  socket.on('disconnect', function() {
-    console.log(updatepeople(-1) + ' people connected');
-
-    delete locations[this.id];
-    io.sockets.emit('delete location', this.id);
-  });
-
-  socket.on('update my location', function(position) {
-    console.log('received location update from ' + this.id);
-
-    locations[this.id] = position.latlng;
-
-    var location = {
-      id: this.id,
-      position: position.latlng
-    };
-
-    io.sockets.emit('location update', location);
-  });
-
-});
-*/
