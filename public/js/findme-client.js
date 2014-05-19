@@ -18,6 +18,11 @@ var mymarker = L.marker([0, 0], {
     iconAnchor: [12, 40]
   }),
   alt: "Me!"
+}).addTo(map)
+  , mycircle = L.circle([0, 0], 50, {
+    color: 'blue',
+    fillColor: 'blue',
+    fillOpacity: 0.5
 }).addTo(map);
 
 var everyone = {};
@@ -80,6 +85,10 @@ if (navigator.geolocation) {
     var latlng = [position.coords.latitude, position.coords.longitude];
 
     mymarker.setLatLng(latlng);
+    mycircle
+      .setLatLng(latlng)
+      .setRadius(position.coords.accuracy)
+    ;
     primus.write({ action: 'updatelocation', data: latlng });
   }
 
