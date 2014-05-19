@@ -19,11 +19,7 @@ var mymarker = L.marker([0, 0], {
   }),
   alt: "Me!"
 }).addTo(map)
-  , mycircle = L.circle([0, 0], 50, {
-    color: 'blue',
-    fillColor: 'blue',
-    fillOpacity: 0.5
-}).addTo(map);
+  , mycircle = L.circle([0, 0], 50).addTo(map);
 
 var everyone = {};
 
@@ -41,9 +37,16 @@ primus.on('data', function(message) {
 
       for (var i=0; i<ids.length; i++) {
         if (!everyone.hasOwnProperty(ids[i])) {
-          everyone[ids[i]] = L.marker(locations[ids[i]]).addTo(map);
+          everyone[ids[i]] = {
+            marker: L.marker(locations[ids[i]].latlng).addTo(map),
+            circle: L.circle(locations[ids[i]].latlng, locations[ids[i]].accuracy).addTo(map)
+           };
         } else {
-          everyone[ids[i]].setLatLng(locations[ids[i]]);
+          everyone[ids[i]].marker.setLatLng(locations[ids[i]].latlng);
+          everyone[ids[i]].circle
+            .setLatLng(locations[ids[i]].latlng)
+            .setRadius(locations[ids[i]].accuracy)
+          ;
         }
       }
 
@@ -57,16 +60,24 @@ primus.on('data', function(message) {
       var location = message.data;
       if (location.id !== this.socket.id) {
         if (everyone[location.id]) {
-          everyone[location.id].setLatLng(location.latlng);
+          everyone[location.id].marker.setLatLng(location.latlng)
+          everyone[location.id].circle
+            .setLatLng(location.latlng)
+            .setRadius(location.accuracy)
+          ;
         } else {
-          everyone[location.id] = L.marker(location.latlng).addTo(map);
+          everyone[location.id] = {
+            marker: L.marker(location.latlng).addTo(map),
+            circle: L.circle(location.latlng, location.accuracy).addTo(map)
+          };
         }
       }
 
       break;
     case 'deletelocation':
       var locationid = message.data.id;
-      map.removeLayer(everyone[locationid]);
+      map.removeLayer(everyone[locationid].marker);
+      map.removeLayer(everyone[locationid].circle);
       delete everyone[locationid];
       break;
   }
@@ -82,14 +93,17 @@ if (navigator.geolocation) {
   function geo_success(position) {
     console.log('got a fix');
 
-    var latlng = [position.coords.latitude, position.coords.longitude];
+    var data = {
+      latlng: [position.coords.latitude, position.coords.longitude],
+      accuracy: Math.ceil(position.coords.accuracy)
+    };
 
-    mymarker.setLatLng(latlng);
+    mymarker.setLatLng(data.latlng);
     mycircle
-      .setLatLng(latlng)
+      .setLatLng(data.latlng)
       .setRadius(position.coords.accuracy)
     ;
-    primus.write({ action: 'updatelocation', data: latlng });
+    primus.write({ action: 'updatelocation', data: data});
   }
 
   function geo_error() {
