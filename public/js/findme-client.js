@@ -19,9 +19,31 @@ var mymarker = L.marker([0, 0], {
   }),
   alt: "Me!"
 }).addTo(map)
-  , mycircle = L.circle([0, 0], 50).addTo(map);
+  , mycircle = L.circle([0, 0], 50, {
+    fillOpacity: 0.5
+  }).addTo(map);
 
 var everyone = {};
+
+function fadeoutoldmarkers(everyone) {
+  var ids = Object.keys(everyone);
+
+  ids.forEach(function(id) {
+    var person = everyone[id]
+      , opacity = person.circle.options.opacity
+
+    if (opacity > 0) {
+      person.circle.setStyle({ opacity: opacity - 0.025});
+      person.marker.setOpacity(person.marker.options.opacity - 0.05)
+    } else {
+      map.removeLayer(person.circle);
+      map.removeLayer(person.marker);
+      delete everyone[id];
+    }
+  })
+}
+
+setInterval(fadeoutoldmarkers, 2000, everyone);
 
 var primus = new Primus();
 
@@ -60,10 +82,13 @@ primus.on('data', function(message) {
       var location = message.data;
       if (location.id !== this.socket.id) {
         if (everyone[location.id]) {
-          everyone[location.id].marker.setLatLng(location.latlng)
+          everyone[location.id].marker
+            .setLatLng(location.latlng)
+            .setOpacity(1)
           everyone[location.id].circle
             .setLatLng(location.latlng)
             .setRadius(location.accuracy)
+            .setStyle({opacity: 0.5})
           ;
         } else {
           everyone[location.id] = {
