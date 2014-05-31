@@ -43,7 +43,7 @@ function fadeoutoldmarkers(everyone) {
   })
 }
 
-setInterval(fadeoutoldmarkers, 2000, everyone);
+setInterval(fadeoutoldmarkers, 4000, everyone);
 
 var primus = new Primus();
 
@@ -101,9 +101,9 @@ primus.on('data', function(message) {
       break;
     case 'deletelocation':
       var locationid = message.data.id;
-      map.removeLayer(everyone[locationid].marker);
-      map.removeLayer(everyone[locationid].circle);
-      delete everyone[locationid];
+//      map.removeLayer(everyone[locationid].marker);
+//      map.removeLayer(everyone[locationid].circle);
+//      delete everyone[locationid];
       break;
   }
 
