@@ -33,8 +33,8 @@ function fadeoutoldmarkers(everyone) {
       , opacity = person.circle.options.opacity
 
     if (opacity > 0) {
-      person.circle.setStyle({ opacity: opacity - 0.025});
-      person.marker.setOpacity(person.marker.options.opacity - 0.05)
+      person.circle.setStyle({ opacity: opacity - 0.05});
+      person.marker.setOpacity(person.marker.options.opacity - 0.1)
     } else {
       map.removeLayer(person.circle);
       map.removeLayer(person.marker);
@@ -43,7 +43,7 @@ function fadeoutoldmarkers(everyone) {
   })
 }
 
-setInterval(fadeoutoldmarkers, 4000, everyone);
+setInterval(fadeoutoldmarkers, 15000, everyone);
 
 var primus = new Primus();
 
