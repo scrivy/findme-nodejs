@@ -1,0 +1,10 @@
+{
+  "name": "findme",
+  "description": "app using to share your location in real time",
+  "version": "0.0.0",
+  "homepage": "https://github.com/scrivy/findme",
+  "license": "MIT",
+  "dependencies": {
+    "semantic-ui": "~0.17.0"
+  }
+}
