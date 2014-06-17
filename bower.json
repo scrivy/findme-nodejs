@@ -5,6 +5,7 @@
   "homepage": "https://github.com/scrivy/findme",
   "license": "MIT",
   "dependencies": {
-    "semantic-ui": "~0.17.0"
+    "semantic-ui": "~0.17.0",
+    "jquery": "~2.1.1"
   }
 }
