@@ -6,6 +6,9 @@
   "license": "MIT",
   "dependencies": {
     "semantic-ui": "~0.17.0",
-    "jquery": "~2.1.1"
+    "jquery": "~2.1.1",
+    "leaflet": "~0.7.3",
+    "underscore": "~1.6.0",
+    "backbone": "~1.1.2"
   }
 }
