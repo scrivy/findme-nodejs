@@ -14,17 +14,6 @@ server.listen(port);
 var primus = new Primus(server, { transformer: 'engine.io' });
 findme.init(primus);
 
-// express setup
-app.set('views', __dirname + '/views');
-app.set('view engine', 'jade');
-app.use(express.favicon());
-app.use(express.logger('dev'));
-
-// get/post requests
-app.get('/', function(req, res) {
-  res.render('index');
-});
-
 // serve static files
 app.use(express.static(__dirname + '/public'));
 

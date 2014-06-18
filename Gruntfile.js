@@ -5,7 +5,11 @@ module.exports = function(grunt) {
       all: ['public/js/*.js']
     },
     watch: {
-      files: ['public/js/*.js', 'views/index.jade'],
+      files: [
+        'Gruntfile.js',
+        'public/js/*.js',
+        'public/index.html'
+      ],
 //      tasks: ['jshint'],
       options: {
         livereload: true
