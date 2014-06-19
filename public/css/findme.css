@@ -3,11 +3,11 @@ body {
   margin: 0;
 }
 
-* {
-  font-family: 'Roboto', sans-serif;
-  color: #505050;
+#map {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
-html, body, #map {
-  height: 100%;
-}
