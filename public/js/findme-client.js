@@ -5,9 +5,8 @@ var map = L.map('map').setView([38.55, -121.74], 13);
 //  maxZoom: 18
 //}).addTo(map);
 
-L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-  attribution: 'Find Me!',
-}).addTo(map);
+//L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+L.tileLayer('http://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png').addTo(map);
 
 map.locate({setView: true, maxZoom: 18});
 
