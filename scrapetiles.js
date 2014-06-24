@@ -13,13 +13,15 @@ var davis = {
     lng: -121.674957
   }
 }
-var dlurl = 'http://a.tile.thunderforest.com/outdoors/';
+var dlurl = 'http://78.47.233.251/outdoors/'
+  , dldir = './public/tiles/';
 
 var place = davis;
 
-// make arrays of all the tiles to grab
+// make arrays and directories of all the tiles to grab
 var tilestograb = {}
 for (var i=0; i<=18; i++) { // zoom levels
+  if (!fs.existsSync(dldir + i)) fs.mkdirSync(dldir + i)
   var thiszoom = {
     NW: {
       lat: lat2tile(place.NW.lat,i),
@@ -36,6 +38,7 @@ for (var i=0; i<=18; i++) { // zoom levels
   do {
     var lng = thiszoom.NW.lng;
     do {
+      if (!fs.existsSync(dldir + i + '/' + lng)) fs.mkdirSync(dldir + i + '/' + lng)
       tilestograb[i].push(lng + '/' + thiszoom.NW.lat);
       lng++;
     } while (lng < thiszoom.SE.lng);
@@ -44,32 +47,24 @@ for (var i=0; i<=18; i++) { // zoom levels
 }
 
 // download and save tiles
-var dldir = './public/tiles/';
-for (var zoom in tilestograb) {
-  fs.exists(dldir + zoom, function(exists) {
-    if (!exists) fs.mkdirSync(dldir + zoom);
-    downloadtile(tilestograb[zoom],dldir,zoom);
-  })
-}
+var tilesdownloaded = 0;
+for (var zoom in tilestograb)
+  downloadtile(tilestograb[zoom],dldir,zoom)
 
 function downloadtile(tiles,dldir,zoom) {
   var tile = tiles.pop()
     , xy   = tile.split('/')
   
-  fs.exists(dldir + zoom + '/' + xy[0], function(exists) {
-    if (!exists) fs.mkdirSync(dldir + zoom + '/' + xy[0])
+  var writestream = fs.createWriteStream(dldir + zoom + '/' + xy[0] + '/' + xy[1] + '.png');
 
-    var writestream = fs.createWriteStream(dldir + zoom + '/' + xy[0] + '/' + xy[1] + '.png');
+  http.get(dlurl + zoom + '/' + xy[0] + '/' + xy[1] + '.png', function(res) {
+    res.on('error', console.error);
+    console.log('zoom: ' + zoom + ' tiles left: ' + tiles.length + ' tiles downloaded: ' + tilesdownloaded++)
+    res.pipe(writestream);
+  });
 
-    http.get(dlurl + zoom + '/' + xy[0] + '/' + xy[1] + '.png', function(res) {
-      res.on('error', console.error);
-      console.log('wrote something at ' + Date.now())
-      res.pipe(writestream);
-    });
-
-    if (tiles.length)
-      setTimeout(downloadtile, 1500, tiles, dldir, zoom)
-  })
+  if (tiles.length)
+    setTimeout(downloadtile, 300, tiles.slice(), dldir, zoom)
 }
 
 function long2tile(lon,zoom) { return (Math.floor((lon+180)/360*Math.pow(2,zoom))); }
