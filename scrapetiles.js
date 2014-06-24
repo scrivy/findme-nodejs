@@ -3,6 +3,10 @@
 var fs = require('fs')
   , http = require('http');
 
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ' + err);
+});
+
 var davis = {
   NW: {
     lat: 38.579189,
@@ -64,7 +68,7 @@ function downloadtile(tiles,dldir,zoom) {
   });
 
   if (tiles.length)
-    setTimeout(downloadtile, 300, tiles.slice(), dldir, zoom)
+    setTimeout(downloadtile, 500, tiles.slice(), dldir, zoom)
 }
 
 function long2tile(lon,zoom) { return (Math.floor((lon+180)/360*Math.pow(2,zoom))); }
