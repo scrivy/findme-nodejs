@@ -14,25 +14,23 @@ server.listen(port);
 var primus = new Primus(server, { transformer: 'engine.io' });
 findme.init(primus);
 
-// serve static files
-app.use(express.static(__dirname + '/public'));
+app.get('/tiles/:z/:x/:y', findme.getTile); // get tiles handler
+app.use(express.static(__dirname + '/public')); // serve static files
 
 primus.on('connection', function(spark) {
   console.log('socket opened');
 
-  findme.sendalllocations(spark.id);
+  findme.sendAllLocations(spark.id);
 
   spark.on('data', function(message) {
     console.log('socket message - ' + message.action);
 
-    if (!message.action || !message.data) {
-      console.log('malformed socket message, disregarding');
-      return;
-    }
+    if (!message.action || !message.data)
+      return console.log('malformed socket message, disregarding');
 
     switch(message.action) {
       case 'updatelocation':
-        findme.updatelocation(this.id, message.data);
+        findme.updateLocation(this.id, message.data);
         break;
 
       default:
@@ -45,6 +43,6 @@ primus.on('connection', function(spark) {
 
 primus.on('disconnection', function(spark) {
   console.log('socket closed');
-  findme.deletelocation(spark.id);
+  findme.deleteLocation(spark.id);
 });
 
