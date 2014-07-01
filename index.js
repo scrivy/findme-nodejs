@@ -3,7 +3,8 @@
 var express = require('express')
   , Primus = require('primus')
   , http = require('http')
-  , findme = require('./lib/findme');
+  , logger = require('morgan')
+  , findme = require('./lib/findme')
 
 var port = process.env.findmeport || 5000
   , app = express()
@@ -14,8 +15,11 @@ server.listen(port);
 var primus = new Primus(server, { transformer: 'engine.io' });
 findme.init(primus);
 
-app.get('/tiles/:z/:x/:y', findme.getTile); // get tiles handler
-app.use(express.static(__dirname + '/public')); // serve static files
+app
+  .use(logger({ format: 'dev' }))
+  .get('/tiles/:z/:x/:y', findme.getTile) // get tiles handler
+  .use(express.static(__dirname + '/public')) // serve static files
+;
 
 primus.on('connection', function(spark) {
   console.log('socket opened');
