@@ -6,7 +6,7 @@ var express = require('express')
   , logger = require('morgan')
   , findme = require('./lib/findme')
 
-var port = process.env.findmeport || 5000
+var port = process.env.FINDMEPORT || 5000
   , app = express()
   , server = http.createServer(app);
 
